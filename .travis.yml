@@ -26,10 +26,13 @@ env:
   - VERSION=7.2-apache NO_DEV=1
   - VERSION=7.2-fpm NO_DEV=1
 
+before_install:
+  - docker -v
+
 install:
-- travis_wait 30 make build VERSION=${VERSION}
-- if [ "$NO_DEV" != "1" ]; then travis_wait 30 make -C dev build VERSION=${VERSION}; fi
+  - travis_wait 30 make build VERSION=${VERSION}
+  - if [ "$NO_DEV" != "1" ]; then travis_wait 30 make -C dev build VERSION=${VERSION}; fi
 
 script:
-- make test VERSION=${VERSION}
-- if [ "$NO_DEV" != "1" ]; then travis_wait 30 make -C dev test VERSION=${VERSION}; fi
+  - make test VERSION=${VERSION}
+  - if [ "$NO_DEV" != "1" ]; then travis_wait 30 make -C dev test VERSION=${VERSION}; fi
