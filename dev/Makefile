@@ -4,7 +4,7 @@ SHELL := /bin/bash
 PARENT_IMAGE := chialab/php
 IMAGE := chialab/php-dev
 VERSION ?= latest
-PHP_VERSION = $(firstword $(subst -, ,$(VERSION)))
+PHP_VERSION := $(firstword $(subst -, ,$(VERSION)))
 
 # Extensions.
 EXTENSIONS := \
@@ -25,6 +25,10 @@ EXTENSIONS := \
 	soap \
 	Xdebug \
 	zip
+ifeq (,$(findstring $(PHP_VERSION), 7.2 latest))
+	# Add more extensions to PHP < 7.2.
+	EXTENSIONS += mcrypt
+endif
 ifeq (,$(findstring $(PHP_VERSION), 7.0 7.1 7.2 latest))
 	# Add more extensions to 5.x series images.
 	EXTENSIONS += mysql
@@ -36,11 +40,12 @@ endif
 
 build:
 	@echo " =====> Building $(IMAGE):$(VERSION)..."
-	@dir="$(subst -,/,$(VERSION))"; \
-	if [[ "$(VERSION)" == 'latest' ]]; then \
-		dir='.'; \
-	fi; \
-	docker build --quiet -t $(IMAGE):$(VERSION) $${dir}
+	@docker build --quiet \
+		--build-arg VERSION=$(VERSION) \
+		--label org.label-schema.build-date=$(shell date -u "+%Y-%m-%dT%H:%M:%SZ") \
+		--label org.label-schema.vcs-ref=$(shell git rev-parse HEAD) \
+		--tag $(IMAGE):$(VERSION) \
+		.
 
 test:
 	@echo -e "=====> Testing loaded extensions... \c"

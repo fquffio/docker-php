@@ -4,7 +4,7 @@ SHELL := /bin/bash
 PARENT_IMAGE := php
 IMAGE := chialab/php
 VERSION ?= latest
-PHP_VERSION = $(firstword $(subst -, ,$(VERSION)))
+PHP_VERSION := $(firstword $(subst -, ,$(VERSION)))
 
 # Extensions.
 EXTENSIONS := \
@@ -39,11 +39,12 @@ endif
 
 build:
 	@echo " =====> Building $(IMAGE):$(VERSION)..."
-	@dir="$(subst -,/,$(VERSION))"; \
-	if [[ "$(VERSION)" == 'latest' ]]; then \
-		dir='.'; \
-	fi; \
-	docker build --quiet -t $(IMAGE):$(VERSION) $${dir}
+	@docker build --quiet \
+		--build-arg VERSION=$(VERSION) \
+		--label org.label-schema.build-date=$(shell date -u "+%Y-%m-%dT%H:%M:%SZ") \
+		--label org.label-schema.vcs-ref=$(shell git rev-parse HEAD) \
+		--tag $(IMAGE):$(VERSION) \
+		.
 
 test:
 	@echo -e "=====> Testing loaded extensions... \c"

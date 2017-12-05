@@ -1,5 +1,5 @@
-FROM chialab/php:7.1
-MAINTAINER dev@chialab.it
+ARG VERSION=latest
+FROM php:${VERSION}
 
 # Install XDebug.
 RUN pecl install xdebug \
