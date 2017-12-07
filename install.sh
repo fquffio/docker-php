@@ -100,6 +100,13 @@ docker-php-ext-enable memcached.so redis.so
 apt-get purge -y --auto-remove $buildDeps
 rm -r /var/lib/apt/lists/*
 
+##########################
+### Apache mod_rewrite ###
+##########################
+if [[ `command -v a2enmod` ]]; then
+    a2enmod rewrite
+fi
+
 ################
 ### Composer ###
 ################
