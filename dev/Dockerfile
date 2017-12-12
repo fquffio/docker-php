@@ -1,5 +1,5 @@
 ARG VERSION=latest
-FROM php:${VERSION}
+FROM chialab/php:${VERSION}
 
 # Install XDebug.
 RUN pecl install xdebug \
