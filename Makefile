@@ -1,7 +1,6 @@
 SHELL := /bin/bash
 .PHONY: pull build-nopull build test
 
-PARENT_IMAGE := php
 IMAGE := chialab/php
 VERSION ?= latest
 PHP_VERSION := $(firstword $(subst -, ,$(VERSION)))

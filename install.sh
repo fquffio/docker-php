@@ -1,6 +1,12 @@
 #!/bin/bash
 set -e
 
+if [[ -z "$1" ]]; then
+    echo 'Missing PHP version!'
+    exit 1
+fi
+phpVersion="$1"
+
 ###########################################################
 ### List of dependencies and extensions to be installed ###
 ###########################################################
@@ -41,11 +47,11 @@ peclExtensions=" \
 #####################################
 ### Version-specific adjustements ###
 #####################################
-if [[ "${PHP_VERSION}" != "5.4."* ]]; then
+if [[ $phpVersion != "5.4."* ]]; then
     # PHP > 5.4
     pearExtensions="${pearExtensions} opcache"
 fi
-if [[ "${PHP_VERSION}" == "5."* ]]; then
+if [[ $phpVersion == "5."* ]]; then
     # PHP 5.x
     runtimeDeps="${runtimeDeps} php-pear"
     pearExtensions="${pearExtensions} mysql"
@@ -54,7 +60,7 @@ else
     # PHP 7.x
     peclExtensions="${peclExtensions} memcached"
 fi
-if [[ "${PHP_VERSION}" != "7.2."* ]]; then
+if [[ $phpVersion != "7.2."* ]]; then
     # PHP < 7.2
     buildDeps="${buildDeps} libmysqlclient-dev"
     runtimeDeps="${runtimeDeps} libmcrypt-dev libpng12-dev"
