@@ -7,6 +7,9 @@ variables:
   - name: dockerImageDev
     value: chialab/php
 
+pool:
+  vmImage: 'ubuntu-20.04'
+
 jobs:
   - job: ListTags
     steps:
