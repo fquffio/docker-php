@@ -1,0 +1,49 @@
+---
+name: Build, test and push images
+
+variables:
+  - name: dockerImage
+    value: chialab/php
+  - name: dockerImageDev
+    value: chialab/php
+
+jobs:
+  - job: ListTags
+    steps:
+    - bash: echo "##vso[task.setVariable variable=tags;isOutput=true]{'5.4':{'path':'5.4', 'tag':'5.4'}, '5.4-apache':{'path':'5.4/apache', 'tag':'5.4-apache'}}"
+      name: matrix
+
+  - job: BuildAndPush
+    dependsOn: ListTags
+    strategy:
+      matrix: $[ dependencies.ListTags.outputs['matrix.tags'] ]
+    steps:
+      - task: Docker@2
+        displayName: Build base image
+        inputs:
+          command: build
+          DockerFile: $(path)/Dockerfile
+          buildContext: $(path)
+          repository: $(dockerImage)
+          tags: $(tag)
+        
+      - task: CMake@1
+        displayName: Test base image
+        inputs:
+          cwd: '.'
+          cmakeArgs: test VERSION=$(tag)
+
+      - task: Docker@2
+        displayName: Build dev image
+        inputs:
+          command: build
+          DockerFile: dev/$(path)/Dockerfile
+          buildContext: dev/$(path)
+          repository: $(dockerImageDev)
+          tags: $(tag)
+
+      - task: CMake@1
+        displayName: Test dev image
+        inputs:
+          cwd: dev
+          cmakeArgs: test VERSION=$(tag)
